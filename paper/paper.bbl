@@ -1,0 +1,34 @@
+\begin{thebibliography}{1}
+
+\bibitem{Appel}
+A.~Appel.
+\newblock {Some techniques for shading machine renderings of solids}.
+\newblock {\em Proceeding AFIPS '68 (Spring) Proceedings of the April 30--May
+  2, 1968, spring joint computer conference}, 1968.
+
+\bibitem{octree}
+{Brandon Pelfrey}.
+\newblock {Coding a Simple Octree}.
+\newblock http://www.brandonpelfrey.com/blog/coding-a-simple-octree/.
+
+\bibitem{octreecode}
+{Brandon Pelfrey}.
+\newblock {SimpleOctree}.
+\newblock https://github.com/brandonpelfrey/SimpleOctree/blob/master/Octree.h.
+
+\bibitem{traversal}
+{J. Revelles and C. Urena and M. Lastra}.
+\newblock {An Efficient Parametric Algorithm for Octree Traversal}.
+\newblock In {\em {Journal of WSCG}}, pages 212--219, 2000.
+
+\bibitem{cube}
+{Morgan McGuire}.
+\newblock {Unit-Volume Cube}.
+\newblock http://graphics.cs.williams.edu/data.
+
+\bibitem{bunny}
+{Unknown}.
+\newblock {Stanford Bunny OBJ}.
+\newblock http://graphics.stanford.edu/~mdfisher/Data/Meshes/bunny.obj.
+
+\end{thebibliography}

@@ -1,0 +1,150 @@
+#comment
+output test.png
+#height, width in pixels
+outsize 480 640
+
+#lower left of image plane (right handed system)
+origin -5 -5 4
+eye 0 0 10
+horiz 15 0 0
+vert 0 10 0
+# origin + horiz = lower right corner
+# origin + vert = upper left corner 
+
+#assign names to colors
+color green 0 1 0
+color white 1 1 1
+color blue 0 0 0.8
+color red 1 0 0 
+color chrome 0.8 0.8 0.8
+color jesus 0.03 0.23 0.45
+color gold 0.984 0.77 0
+color lilac 0.815 0.65 0.863
+
+
+background 0 0 0 
+
+#determine how many rays for anti aliasing
+rays 1
+#determine recursion depth for reflections
+depth 5
+
+mat amb white
+mat diff white
+mat shiny 0.4
+mat spec white
+mat save semiwhite
+
+mat amb white
+mat diff white
+mat shiny 0
+mat spec white
+mat save white
+
+mat amb green
+mat diff green
+mat shiny 1.0
+mat spec 1 1 1
+mat save semigreen
+
+mat amb green
+mat diff green
+mat shiny 0
+mat spec 1 1 1
+mat save green
+
+mat amb blue
+mat diff blue
+mat shiny 1.0
+mat spec white
+mat save semiblue
+
+mat amb blue
+mat diff blue
+mat spec white
+mat shiny 0
+mat save blue
+
+mat amb red
+mat diff red
+mat spec 1 1 1
+mat shiny 1.0
+mat save semired
+
+mat amb red
+mat diff red
+mat spec red
+mat shiny 0
+mat save red
+
+mat amb chrome
+mat diff chrome
+mat spec white
+mat shiny 1.0
+mat save chrome
+
+mat amb jesus
+mat diff jesus
+mat spec white
+mat shiny 0.4
+mat save jesus
+
+mat amb gold
+mat diff gold
+mat spec white
+mat shiny 0.8
+mat save gold
+
+mat amb lilac
+mat diff lilac
+mat spec lilac
+mat shiny 0.3
+mat save lilac
+
+
+
+#load saved material as current
+mat load gold
+
+#center x,y,z radius
+#material set to current material
+sphere 0 0 0 2   
+
+mat load jesus
+sphere 4 0 0 1
+mat load lilac
+sphere 1 5 0 2
+
+mat load chrome #eol comment
+#xyz of ll, lr, ur
+#bottom
+rectangle -5 -5 20  10 -5 20  10 -5 -5
+
+#back
+mat load chrome
+rectangle -5 -5 -5  10 -5 -5  10 10 -5
+
+#left
+mat load chrome
+rectangle -5 -5 20  -5 -5 -5  -5 10 -5
+
+#right
+mat load chrome
+rectangle  10 -5 -5  10 -5 20  10 10 20
+
+#top
+mat load chrome
+rectangle -5 10 20  10 10 20  10 10 -5
+
+#front
+mat load chrome
+rectangle 10 -5 20  -5 -5 20  -5 10 20
+
+#global ambient
+amblight 0.1
+
+#xyz pos intensity
+light 0 3 10 0.3 
+light -5 0 0 0.3
+light 5 8 0 0.3
+

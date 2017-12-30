@@ -1,0 +1,80 @@
+#comment
+output test.png
+#height, width in pixels
+outsize 480 640
+
+#lower left of image plane (right handed system)
+origin -3 -5 -8
+eye 10 0 -15
+horiz 13.3 0 0
+vert 0 10 0
+# origin + horiz = lower right corner
+# origin + vert = upper left corner 
+
+#assign names to colors
+color green 0 1 0
+color white 1 1 1
+color blue 0 0 0.8
+color red 1 0 0 
+color chrome 0.8 0.8 0.8
+
+background 0 0 0
+
+#rays 5
+depth 2
+
+#define color by name
+mat amb green
+mat diff green
+mat shiny 0
+#define color by rgb
+mat spec 1 1 1
+mat save green
+
+mat amb blue
+mat diff blue
+mat shiny 0
+mat spec white
+mat save blue
+
+mat amb chrome
+mat diff chrome
+mat spec white
+mat shiny 0.5
+mat save chrome
+
+mat load chrome 
+
+obj maleLow.obj
+
+mat load chrome
+#xyz of ll, lr, ur
+#bottom
+#rectangle -5 -5 20  10 -5 20  10 -5 -5
+
+#back
+mat load chrome
+#rectangle -15 -6 6  15 -6 6  15 15 6
+
+#left
+mat load chrome
+#rectangle -5 -5 20  -5 -5 -5  -5 10 -5
+
+#right
+mat load chrome
+#rectangle  10 -5 -5  10 -5 20  10 10 20
+
+#top
+mat load chrome
+#rectangle -5 10 20  10 10 20  10 10 -5
+
+#front
+mat load chrome
+#rectangle 10 -5 20  -5 -5 20  -5 10 20
+
+light 15 2 -2 0.2
+light 0 3 -10 0.3
+light -5 0 0 0.3
+light 5 8 0 0.3
+light 2.5 10 -10 0.3
+

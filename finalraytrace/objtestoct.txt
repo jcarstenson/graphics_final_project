@@ -1,0 +1,46 @@
+#comment
+output test.png
+#height, width in pixels
+outsize 480 640
+
+#lower left of image plane (right handed system)
+origin -3 -5 -8
+eye 10 0 -15
+horiz 13.3 0 0
+vert 0 10 0
+# origin + horiz = lower right corner
+# origin + vert = upper left corner 
+
+#assign names to colors
+color green 0 1 0
+color white 1 1 1
+color blue 0 0 0.8
+color red 1 0 0 
+
+background 0 0 0
+
+oct 0 0 0 10 6
+
+#rays 5
+#depth 15
+
+
+#define color by name
+mat amb green
+mat diff green
+mat shiny 0.3
+#define color by rgb
+mat spec 1 1 1
+
+#store current material by name
+mat save green
+
+mat load green
+
+obj cube.obj
+
+light 15 2 -2 0.2
+light 0 3 -10 0.3
+light -5 0 0 0.3
+light 5 8 0 0.3
+

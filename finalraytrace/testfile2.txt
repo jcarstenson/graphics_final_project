@@ -1,0 +1,81 @@
+#comment
+output test.png
+#height, width in pixels
+outsize 480 640
+
+#lower left of image plane (right handed system)
+origin -5 -5 8
+eye 0 0 15
+horiz 13.3 0 0
+vert 0 10 0
+# origin + horiz = lower right corner
+# origin + vert = upper left corner
+
+oct 0 0 0 20 20
+
+#assign names to colors
+color green 0 1 0
+color white 1 1 1
+color blue 0 0 0.8
+color red 1 0 0 
+
+background 0 0 0 
+
+rays 5
+depth 5
+
+mat amb white
+mat diff white
+mat shiny 1.0
+mat spec white
+mat save white
+
+
+
+#define color by name
+mat amb green
+mat diff green
+#define color by rgb
+mat shiny 1.0
+mat spec 1 1 1
+
+#store current material by name
+mat save green
+
+mat amb blue
+mat diff blue
+mat shiny 0.4
+mat save blue
+
+mat amb red
+mat diff red
+mat spec 0 1 1
+mat shiny 0.4
+mat save red
+
+#load saved material as current
+mat load green
+
+#center x,y,z radius
+#material set to current material
+sphere 0 0 0 2   
+
+mat load red
+sphere 4 0 0 1
+sphere 0 5 0 3
+
+mat load blue #eol comment
+#xyz of ll, lr, ur
+rectangle -5 -5 5  5 -5 5  5 -5 -5
+
+mat load blue
+triangle -5 -5 -5  5 -5 -5  5 10 -5
+
+#global ambient
+amblight 0.1
+
+#xyz pos intensity
+light 0 3 10 0.3 
+light -5 0 0 0.3
+light 5 8 0 0.3
+

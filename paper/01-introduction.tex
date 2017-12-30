@@ -1,0 +1,19 @@
+\section{Introduction}
+
+        \par Ray tracing has been around since its proposal by Arthur Appel in 1968 \cite{Appel} and since has become one of the most common ways to render images. In combination with the classic Blinn-Phong model of lighting we created a small CPU based ray tracer for our midterm project. As a final project for this course we decided to pursue a large extension of this tracer by adding more complex concepts and more intensive computations. This entails adding object parsing, complex objects, and data structures such as octrees to speed up hitTimes.
+        \par Octrees are data structures that divide 3D space into a tree- each node having exactly 8 children save for the leaf nodes. This way of organizing space will allow our ray tracer to run more quickly as we may divide each object in the scene into "nodes" and instead of linearly searching for hits on objects we may instead narrow searches down to a few "pierced" nodes. Ideally a ray will enter one octree root, determine which child it hit, then which child of that child it hit, and so on. The higher depth to which we define our tree, the more nodes there will be and thus the program will theoretically run faster and faster as depth increases.
+        \par The object parser incorporates the parser from our old ray tracer and adds some commands to allow object file uploads. These object files define vertices and triangle fragments that our ray tracer may then render as a complete, complex object.
+        \par The primary challenges we faced were designing the octree itself and implementing an efficient way to determine ray-box intersections for the tracer. Despite having all the code necessary, our octree does not work perfectly but does create significant speedups. \cite{octree}
+        
+        
+        
+        
+        
+        
+        
+        
+        %We really enjoyed working on our midterm project and wish to expand our baby. We want to see what its capable of and how many additional features we can add, it's exciting to think that we might be able to render a classic complex object like the teapot, bunny, or dragon with our raytracer.
+        %We wish to import a good portion of our raytracer from the midterm project and an object file downloaded from the internet, perhaps from Stanford's website. Other than that we believe everything will be self written including the object parser, octree data structure, refractive algorithms and geometry, and potentially paralleism.
+        %Our short term goals entail writing an object parser to load up the classic Chinese dragon in particular (roughly 1.32 million triangles), we will then write a hitTime and normal calculator for this specific object so we may use our raytracer to render it. Long term goals would be making this rendering faster by creating a data structure (kd-tree) to sort the triangles and make the hitTime function much quicker, O(n**2). Reach goals include added difraction and refractive surfaces and a super reach goal is to add light scattering by spawning multiple colored light rays as they leave a refracted surface. To do this we would be sending a ray to each point and then checking to see if its reflection hits and refractive surfaces and if it does at a specific angle it would be then colored some color based on the angle. Even further, as a mega reach goal we hope to potentially parallelize at least parts of the project so that it will run in a resonable time.
+        %In order to evaluate success in our project we will look at how many features we add and how much the data structure speeds up the rendering. We hope to have an extremely polished project, and thus have chosen one that sounds within reason for the amount of time that we have.
+

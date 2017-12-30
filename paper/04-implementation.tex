@@ -1,0 +1,12 @@
+\section{Implementation}
+
+\par We used Qt and the Qtcreator IDE to implement all of our code. Nearly all of our code is either from our midterm project or originally written by us for this project. However, we did use pseudo code for a travesal algorithm from a paper \cite{traversal} and all object files used are courtesy of public domain resources on the internet \cite{cube} \cite{bunny}.
+\par For the object parser we implemented it in much the same way that the parser itself worked from our raytracer. We designed it as a data structure so that we could simply add a new "cmd" to the parser in our raytracer that would be triggered by the command "obj" and creates an object parser "object" and then creates a vector of triangle objects while reading through the object file. Then that list of triangles is entered into the object list in our ray tracer.
+\par Our project runs by simply running ./makescene <input .txt file>. The txt file is in the style of the txt file from the midterm raytacer but includes an extra command, "obj" to add a .obj file for our parser. This command can be entered in the file as obj bunny.obj for example. We also added a command, "oct" that should be included in the input file if the user wants to use octrees to render.
+
+
+
+%Here you can place more technical details. Are you using Qt, OpenGL, CUDA (which version), shaders, pthreads, etc. What type of graphics hardware were you using? Did you use third party packages? Describe them here. 
+
+%Did you need to take any shortcuts due to time with respect to your design? What are the limitations of your implementation. 
+

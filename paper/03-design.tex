@@ -1,0 +1,98 @@
+\section{Design}
+
+        \par For this project we are using a previously written CPU based ray tracer and as such will not go into depth on its creation; instead, we will focus on our octree design and how it interacts with the tracer. For our design we decided to skip creating an octree node class, but instead to just create an octree class. This is due to the nature of octrees, each octree is in itself a "node" as it will point to its children and any data it may store. Thus, instead of having an octree of nodes we will design our tree as an octree of octrees. Of course, the leaves will be octrees that are simply root nodes.
+        \par Our private data members include a list of child pointers, a shape pointer, a member for the origin of the sector in space, and a member to store half the dimension of the sector (half the width or height since they will be cubes). We need some efficient methods to make this data structure effective- the first being an insert method which will allow us to insert data into the tree. 
+        \par There are three potential cases that may occur when calling insert: the first is that we hit an interior node. We are designing our octree to have no "data" associated with interior nodes, but instead only with our leaf nodes. Thus if we hit an interior node we must follow its child pointers until we find the node we want to insert into based on its origin and whatever data we have (in our case a triangle, so we will look at triangle coordinates and insert triangles into nodes based on comparisons with the node bound box compared with the triangle bound box). The second case is the node is a leaf and has not filled up its data, and thus we add the triangle to the list of triangle pointers. Third case however, is that we hit a leaf node and it already has its max amount of data. This would entail adding a level of depth to the tree (inserting a new tree to each of the this node's children) and taking all of its data and distributing it within its childrens' octrees. This is done using a function that takes a bounding box (taken from each shape) and tells which children are contained within this box. We then add the shape to all of these children. Bound boxes are defined by lower left corner and upper right corner and are found in various ways depending on shape- spheres are the simplest shape to find a bound box for as the min is simply the center point - a vector of the radius, and the max is the same but with the radius vector added. Every shape based on a plane is more complex, for these we took the minimum x value, minimum y value, minimum z value and put these in as our min point. And similarly we used the max x, max y, and max z for our max point. These bounding boxes allow us to complete our getChildrenInsideBox function which is needed two times in our insert function.
+        \par Next we added our method to determine which child a given point is in (getOctant). We did this by assigning the children in a systematic way suggested by our resources. Having the children ordered by a pattern allows us to know where/what to index when getting to later methods we implement. We used the following pattern where a "-" means less than the origin in that dimension and vice versa. \newline\newline
+        \begin{tabular}{ccccccccc}
+          Index & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 \\
+          \hline
+          x & - & - & - & - & + & + & + & + \\
+          y & - & - & + & + & - & - & + & + \\
+          z & - & + & - & + & - & + & - & + \end{tabular} 
+        \newline\newline
+        Thus our function becomes quite simple as it can be achieved through nested if statements with 8 potential cases- one for each child. Furthermore, each child can be indexed by a 3-bit binary number, with each bit signifying x, y, and z relative positions (+ or - the origin of the octant). This allows us to use bitwise operations to check each axis independently. These bitwise operations are used in the input function when creating the 8 new child octrees. We use them to determine which child's number (0-7) gets which octanct, following the table above.
+        \par Our final and perhaps most important method of the octree we need to implement is one to determine which child of an octree was hit by the ray. We will do this by comparing where our ray is passing through with the origins of the top level of nodes, then with the next level down until we reach a leaf. Then we know that we have our deepest node once we've followed this path through the tree. It is also possible that multiple nodes will be struck by a ray. Testing for hits is extremely complicated and uses some complex parametric algorithms \cite{traversal}.
+       
+        \par The final aspect of the Octree implementation is the ray-octree intersection that needs to be calculated in order to know which leaf nodes are pierced by a ray. This is done by taking the ray parametric function: 
+$$ r_x(t) = p_x + td_x$$
+$$ r_y(t) = p_y + td_y$$
+$$ r_z(t) = p_z + td_z$$
+We know that an intersection has occured if there exists one t that satisfies:
+$$ x_0(o) \leq r_x(t) < x_1(o)$$
+$$ y_0(o) \leq r_y(t) < y_1(o) $$
+$$ z_0(o) \leq r_z(t) < z_1(o) $$
+where $(x_0, y_0, z_0)$ and $(x_1, y_1, z_1)$ are the bounding box for any given octree node o. Knowing this, we can calculate the times for when the specific ray cross each the min and max values for each axis in the octree using the inverse of the first equation above:
+$$ t_{xi}(o,r) = \frac{x_i(o) - p_x}{d_x} $$
+$$ t_{yi}(o,r) = \frac{y_i(o) - p_y}{d_y} $$
+$$ t_{zi}(o,r) = \frac{z_i(o) - p_z}{d_z} $$
+Where p is the origin of ray r, and d is the direction vector. This is done for i values 0 and 1 to give six independent times used in the ray-octree intersection algorithm. Now that we have all of the $ t_0 $ and $ t_1 $ values. To find the first time the ray hits the octree and the time when it exits, you take the max and min of respectively of each component time value:
+$$ t_{min}(o,r) = max(t_{x0}(o,r), t_{y0}(o,r), t_{z0}(o,r)) $$
+$$ t_{max}(o,r) = min(t_{x1}(o,r), t_{y1}(o,r), t_{z1}(o,r)) $$
+Now we have sufficient information to know weather or not a ray interesects a given octree by checking the condition:
+$$ t_{min}(o,r) < t_{max}(o,r) $$
+If this is true, interesection occurs. Another useful piece of information to remove redundant calculations are the time values of when the ray crosses the median of each axis called $ t_m $. We find this using the following equation:
+$$ t_{xm}(o,r) = \frac{t_{x0}(o,r) + t_{x1}(o,r)}{2} $$
+$$ t_{ym}(o,r) = \frac{t_{y0}(o,r) + t_{y1}(o,r)}{2} $$
+$$ t_{zm}(o,r) = \frac{t_{z0}(o,r) + t_{z1}(o,r)}{2} $$
+Now we have all the information we need to find the pierced children of an octree. The first thing to do is find the first node intersected by a ray. The first thing to do is take $t_{min}$ and figure out which compenent of $ t_0 $ it equals. Then use the following table to determine the entry plane: \newline
+
+
+\begin{tabular}{c|c}
+  Maximum & Entry Plane \\
+  \hline
+  $t_{x0}$ & YZ \\
+  $t_{y0}$ & XZ \\
+  $t_{z0}$ & XY \\ \end{tabular}
+  \newline
+
+Once you have determined the entry plane, there are two conditional statments that determine the state of two bits in a 3 bit number that decides which child octant is the first pierced node. Use the following table:\newline
+
+
+\begin{tabular}{c|c|c}
+  Entry Plane & Conditions & Bit \\
+  \hline
+  XY & $t_{xm} < t_{z0}$ & 0 \\
+     & $t_{ym} < t_{z0}$ & 1 \\
+  \hline
+  XZ & $t_{ym} < t_{y0}$ & 0 \\
+     & $t_{zm} < t_{y0}$ & 2 \\
+  \hline
+  YZ & $t_{ym} < t_{x0}$ & 1 \\
+     & $t_{zm} < t_{x0}$ & 2 \\ \end{tabular}
+  \newline
+
+  The next part of the algorithm is finding the next pierced nodes which can be found by finding the exit node of the current pierced node. This is done by finding $t_{max}$ of the current child node. Similar to finding the entry plane above, the exit plane is determined by which component came out as the minimum value, with $x$ maping to the YZ plane, $y$ mapping to the XZ plane, and $z$ mapping to the XY plane. Now, use the following table to find which is the next node pierced by the ray by finding which node you are currently on and what the exit plane is: \newline
+
+        \begin{tabular}{c|c|c|c}
+        Current & YZ & XZ & XY \\
+        \hline
+        0 & 4 & 2 & 1 \\
+        1 & 5 & 3 & END \\
+        2 & 6 & END & 3 \\
+        3 & 7 & END & END \\
+        4 & END & 6 & 5 \\
+        5 & END & 7 & END \\
+        6 & END & END & 7 \\
+        7 & END & END & END \\ \end{tabular} 
+        \newline
+
+This is done for all of the visited nodes until the end is reached which signifies the ray exiting the octree. Now all of these pierced nodes will be checked for their hit times to find which ones were hit, and should be drawn.
+
+        \par This implementation works under the assuption that every component of the direction vector is positive. If a negative component is encountered the ray needs to be redifined to $r'$ with the following equations:
+$$ d'_e = -d_e $$
+$$ p'_e = p_e - 2(p_e - o_e) $$
+with o being the origin of the octree. This is performed for all components $e \in {x,y,z}$  where
+$$ d_e < 0 $$
+This effectively reflects the ray across the tree on the given axis, requiring a reordering of the child node numbers. This function is used for a given child node i to convert it to the actual child node referenced:
+$$ f(i) = i \oplus a $$
+where a can be found using:
+$$ a = 4s_x + 2s_y + s_z $$
+where $s_e$ is 1 if $d_e < 0$ and 0 otherwise. This information on the ray-octree traversal was adapted from the Revelles et. al. paper\cite{traversal}
+
+
+        \par Finally, we also decided to add an implementation of a parser for .obj files to make testing of the octree easier. We did not implement all aspects and functionality of .obj files, just vertex and triangle definitions, marked by the v and f commands respectively. A dictionary is kept of all the vertices with indexes starting at 1 used as the keys. The triangles are defined using these indexes as references to each point of the triangle. Since parsing any file format is similar in that it is a line by line process, many snippets of code are borrowed from Andrew Danner's input parser from the raytraycing lab, especially parseFile and parseLine, which have the anlogs of parseObj and parseObjLine. Furthermore, parser.h is included in the parser's implementation and parseFloat and parseInt are used in the .obj parser extensively.
+
+
+%Describe the key components of your project design. This could be key concepts or data structures. Don't get overly technical about the actual code. Someone else should be able to design a similar project to yours by reading the design and implementing it in their own programming language. 
+
